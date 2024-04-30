@@ -14,12 +14,6 @@ data_frame = pd.read_csv('ApartmentRentPrediction.csv')
 # data_frame['time'] = pd.to_datetime(data_frame['time'], unit='s')
 # data_frame['time'] = pd.to_datetime(data_frame['time'], unit='s')
 data_frame.drop('price',axis=1, inplace=True)
-address_mode=data_frame['address'].mode()[0]
-data_frame['address'] = data_frame['address'].fillna(address_mode)
-cityname_mode=data_frame['cityname'].mode()[0]
-data_frame['cityname'] = data_frame['cityname'].fillna(cityname_mode)
-state_mode=data_frame['state'].mode()[0]
-data_frame['state'] = data_frame['state'].fillna(state_mode)
 data_frame['currency'] = 0
 data_frame['fee'] = 0
 columns_for_encoding = ('category', 'title', 'body', 'has_photo', 'price_type', 'address', 'source')
@@ -31,20 +25,17 @@ amenities_columns=df_encoded_amenities.columns.values
 data_frame.drop(columns=['amenities'], inplace=True)
 data_frame = pd.concat([data_frame, df_encoded_amenities], axis=1)
 
-bathroom_mean=data_frame['bathrooms'].mean()
-data_frame['bathrooms'] = data_frame['bathrooms'].fillna(bathroom_mean)
-data_frame['bathrooms'] = data_frame['bathrooms'].astype(int)
+null_replacement={}
+null_replacement['address']=data_frame['address'].mode()[0]
+null_replacement['cityname']=data_frame['cityname'].mode()[0]
+null_replacement['state']=data_frame['state'].mode()[0]
+null_replacement['bathrooms']=data_frame['bathrooms'].mean()
+null_replacement['bedrooms']=data_frame['bedrooms'].mean()
+null_replacement['latitude']=data_frame['latitude'].mean()
+null_replacement['longitude']=data_frame['longitude'].mean()
 
-bedroom_mean=data_frame['bedrooms'].mean()
-data_frame['bedrooms'] = data_frame['bedrooms'].fillna(bedroom_mean)
-data_frame['bedrooms'] = data_frame['bedrooms'].astype(int)
-
-latitude_mean=data_frame['latitude'].mean()
-data_frame['latitude'] = data_frame['latitude'].fillna(latitude_mean)
-
-longitude_mean=data_frame['longitude'].mean()
-data_frame['longitude'] = data_frame['longitude'].fillna(longitude_mean)
-
+for col in null_replacement:
+    data_frame[col] = data_frame[col].fillna(null_replacement[col])
 
 data_frame['price_display'] = data_frame['price_display'].str.replace(r'[^\d]', '', regex=True).astype(int)
 
