@@ -1,4 +1,4 @@
-from sklearn.preprocessing import LabelEncoder, PolynomialFeatures, StandardScaler
+from sklearn.preprocessing import OrdinalEncoder, PolynomialFeatures, StandardScaler
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -66,9 +66,9 @@ data_frame['sum5'] = data_frame['state_mean_price']  * data_frame['city_mean_pri
 
 label_encoders = {} #Dictionary to store label encoders
 for c in columns_for_encoding:
-    lbl = LabelEncoder()
-    lbl.fit(data_frame[c])
-    data_frame[c] = lbl.transform(data_frame[c])
+    lbl = OrdinalEncoder(handle_unknown='use_encoded_value',unknown_value=-1)
+    lbl.fit(data_frame[[c]])
+    data_frame[c] = lbl.transform(data_frame[[c]])
     label_encoders[c] = lbl
 
 
@@ -217,4 +217,3 @@ gb_regressor = GradientBoostingRegressor()
 print("Gradient boosting regressor model")
 evaluate_model(gb_regressor,X_train,y_train,X_test,y_test)
 print("______________________")
-
