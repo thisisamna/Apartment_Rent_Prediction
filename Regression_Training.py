@@ -8,14 +8,6 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
 
-def feature_encoder(x, cols):
-    for c in cols:
-        lbl = LabelEncoder()
-        lbl.fit(list(x[c].values))
-        x[c] = lbl.transform(list(x[c].values))
-    return x
-
-
 data_frame = pd.read_csv('ApartmentRentPrediction.csv')
 
 
@@ -29,6 +21,12 @@ data_frame['currency'] = 0
 data_frame['fee'] = 0
 columns_for_encoding = ('category', 'title', 'body', 'has_photo', 'price_type', 'address', 'source')
 
+label_encoders = {} #Dictionary to store label encoders
+for c in columns_for_encoding:
+    lbl = LabelEncoder()
+    lbl.fit(data_frame[c])
+    data_frame[c] = lbl.transform(data_frame[c])
+    label_encoders[c] = lbl
 
 data_frame['amenities'] = data_frame['amenities'].str.replace(r'[/\s]', ',')
 df_encoded_amenities = data_frame['amenities'].str.get_dummies(sep=',')
@@ -54,14 +52,14 @@ data_frame.drop(columns=['pets_allowed'], inplace=True)
 data_frame = pd.concat([data_frame, df_encoded_pets_allowed], axis=1)
 
 
-data_frame = feature_encoder(data_frame, columns_for_encoding)
 state_mean_price = data_frame.groupby('state')['price_display'].mean()
 data_frame['state_mean_price'] = data_frame['state'].map(state_mean_price)
 city_mean_price = data_frame.groupby('cityname')['price_display'].mean()
 data_frame['city_mean_price'] = data_frame['cityname'].map(city_mean_price)
 data_frame.drop(['state', 'cityname'], axis=1, inplace=True)
 
-data_frame = feature_encoder(data_frame, columns_for_encoding)
+
+
 cats_mean_price = data_frame.groupby('Cats')['price_display'].mean()
 data_frame['cats_mean_price'] = data_frame['Cats'].map(cats_mean_price)
 dogs_mean_price = data_frame.groupby('Dogs')['price_display'].mean()
