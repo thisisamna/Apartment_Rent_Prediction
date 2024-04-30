@@ -14,40 +14,44 @@ data_frame = pd.read_csv('ApartmentRentPrediction.csv')
 # data_frame['time'] = pd.to_datetime(data_frame['time'], unit='s')
 # data_frame['time'] = pd.to_datetime(data_frame['time'], unit='s')
 data_frame.drop('price',axis=1, inplace=True)
-data_frame['address'] = data_frame['address'].fillna(data_frame['address'].mode()[0])
-data_frame['cityname'] = data_frame['cityname'].fillna(data_frame['cityname'].mode()[0])
-data_frame['state'] = data_frame['state'].fillna(data_frame['state'].mode()[0])
+address_mode=data_frame['address'].mode()[0]
+data_frame['address'] = data_frame['address'].fillna(address_mode)
+cityname_mode=data_frame['cityname'].mode()[0]
+data_frame['cityname'] = data_frame['cityname'].fillna(cityname_mode)
+state_mode=data_frame['state'].mode()[0]
+data_frame['state'] = data_frame['state'].fillna(state_mode)
 data_frame['currency'] = 0
 data_frame['fee'] = 0
 columns_for_encoding = ('category', 'title', 'body', 'has_photo', 'price_type', 'address', 'source')
 
-label_encoders = {} #Dictionary to store label encoders
-for c in columns_for_encoding:
-    lbl = LabelEncoder()
-    lbl.fit(data_frame[c])
-    data_frame[c] = lbl.transform(data_frame[c])
-    label_encoders[c] = lbl
-
 data_frame['amenities'] = data_frame['amenities'].str.replace(r'[/\s]', ',')
 df_encoded_amenities = data_frame['amenities'].str.get_dummies(sep=',')
+amenities_columns=df_encoded_amenities.columns.values
+
 data_frame.drop(columns=['amenities'], inplace=True)
 data_frame = pd.concat([data_frame, df_encoded_amenities], axis=1)
 
-
-data_frame['bathrooms'] = data_frame['bathrooms'].fillna(data_frame['bathrooms'].mean())
+bathroom_mean=data_frame['bathrooms'].mean()
+data_frame['bathrooms'] = data_frame['bathrooms'].fillna(bathroom_mean)
 data_frame['bathrooms'] = data_frame['bathrooms'].astype(int)
-data_frame['bedrooms'] = data_frame['bedrooms'].fillna(data_frame['bedrooms'].mean())
+
+bedroom_mean=data_frame['bedrooms'].mean()
+data_frame['bedrooms'] = data_frame['bedrooms'].fillna(bedroom_mean)
 data_frame['bedrooms'] = data_frame['bedrooms'].astype(int)
 
+latitude_mean=data_frame['latitude'].mean()
+data_frame['latitude'] = data_frame['latitude'].fillna(latitude_mean)
 
-data_frame['latitude'] = data_frame['latitude'].fillna(data_frame['latitude'].mean())
-data_frame['longitude'] = data_frame['longitude'].fillna(data_frame['longitude'].mean())
+longitude_mean=data_frame['longitude'].mean()
+data_frame['longitude'] = data_frame['longitude'].fillna(longitude_mean)
 
 
 data_frame['price_display'] = data_frame['price_display'].str.replace(r'[^\d]', '', regex=True).astype(int)
 
 
 df_encoded_pets_allowed = data_frame['pets_allowed'].str.get_dummies(sep=',')
+pet_columns=df_encoded_pets_allowed.columns.values
+
 data_frame.drop(columns=['pets_allowed'], inplace=True)
 data_frame = pd.concat([data_frame, df_encoded_pets_allowed], axis=1)
 
@@ -68,6 +72,13 @@ data_frame.drop(['Cats', 'Dogs'], axis=1, inplace=True)
 
 data_frame['sum4'] = data_frame['state_mean_price']  + data_frame['city_mean_price']  + (data_frame['cats_mean_price']  + data_frame['dogs_mean_price'] )
 data_frame['sum5'] = data_frame['state_mean_price']  * data_frame['city_mean_price'] + (data_frame['cats_mean_price']  * data_frame['dogs_mean_price'] )
+
+label_encoders = {} #Dictionary to store label encoders
+for c in columns_for_encoding:
+    lbl = LabelEncoder()
+    lbl.fit(data_frame[c])
+    data_frame[c] = lbl.transform(data_frame[c])
+    label_encoders[c] = lbl
 
 
 from scipy import stats
