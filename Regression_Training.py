@@ -217,3 +217,18 @@ gb_regressor = GradientBoostingRegressor()
 print("Gradient boosting regressor model")
 evaluate_model(gb_regressor,X_train,y_train,X_test,y_test)
 print("______________________")
+
+import pickle
+with open("regression.pkl", "wb") as f:
+        pickle.dump(null_replacement, f)
+        pickle.dump(amenities_columns, f)
+        pickle.dump(pet_columns, f)
+        pickle.dump(state_mean_price, f)
+        pickle.dump(city_mean_price, f)
+        pickle.dump(cats_mean_price, f)
+        pickle.dump(dogs_mean_price, f)
+        pickle.dump(label_encoders, f)
+        pickle.dump(scaled_cols, f)
+        pickle.dump(scaler, f)
+        pickle.dump(top_feature, f)
+        pickle.dump(gb_regressor, f)
