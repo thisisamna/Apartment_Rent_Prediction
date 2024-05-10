@@ -57,6 +57,9 @@ data_frame['price_display'] = data_frame['price_display'].str.replace(r'[^\d]', 
 data_frame['state_mean_price'] = data_frame['state'].map(state_mean_price)
 data_frame['city_mean_price'] = data_frame['cityname'].map(city_mean_price)
 data_frame.drop(['state', 'cityname'], axis=1, inplace=True)
+#Fill nulls caused by unseen state
+data_frame['state_mean_price'] = data_frame['state_mean_price'].fillna(0)
+data_frame['city_mean_price'] = data_frame['city_mean_price'].fillna(0)
 
 data_frame['cats_mean_price'] = data_frame['Cats'].map(cats_mean_price)
 data_frame['dogs_mean_price'] = data_frame['Dogs'].map(dogs_mean_price)
@@ -73,7 +76,6 @@ data_frame['sum5'] = data_frame['state_mean_price']  * data_frame['city_mean_pri
 data_frame[scaled_cols] = scaler.transform(data_frame[scaled_cols])
 
 X = data_frame[top_feature]
-X = X.drop('price_display', axis=1)
 y = data_frame['price_display']
 
 
