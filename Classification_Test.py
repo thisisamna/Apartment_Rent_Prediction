@@ -32,7 +32,9 @@ for col in null_replacement:
 
 data_frame['amenities'] = data_frame['amenities'].str.replace(r'[/\s]', ',')
 df_encoded_amenities = data_frame['amenities'].str.get_dummies(sep=',')
-amenities_columns=df_encoded_amenities.columns.values
+test_amenities_columns=df_encoded_amenities.columns.values
+unseen_columns = [x for x in test_amenities_columns if x not in amenities_columns]
+df_encoded_amenities.drop(columns=unseen_columns, inplace=True)
 data_frame.drop(columns=['amenities'], inplace=True)
 data_frame = pd.concat([data_frame, df_encoded_amenities], axis=1)
 #Check if a column is not found in test data 
