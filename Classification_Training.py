@@ -23,7 +23,6 @@ amenities_columns=df_encoded_amenities.columns.values
 
 data_frame.drop(columns=['amenities'], inplace=True)
 data_frame = pd.concat([data_frame, df_encoded_amenities], axis=1)
-print(data_frame.info())
 null_replacement={}
 null_replacement['address']=data_frame['address'].mode()[0]
 null_replacement['cityname']=data_frame['cityname'].mode()[0]
@@ -36,7 +35,7 @@ null_replacement['pets_allowed']=""
 
 for col in null_replacement:
     data_frame[col] = data_frame[col].fillna(null_replacement[col])
-print(data_frame.info())
+
 df_encoded_pets_allowed = data_frame['pets_allowed'].str.get_dummies(sep=',')
 pet_columns=df_encoded_pets_allowed.columns.values
 
@@ -67,16 +66,11 @@ for c in columns_for_encoding:
 
 
 
-
-
-
-
 scaled_cols = list(data_frame.columns)
 scaled_cols.remove("RentCategory")
 scaler = StandardScaler()
 data_frame[scaled_cols] = scaler.fit_transform(data_frame[scaled_cols])
 data_frame.head()
-
 
 
 
@@ -109,7 +103,6 @@ data_frame.head()
 
 X = data_frame.drop('RentCategory', axis=1)
 Y = data_frame['RentCategory']
-print(X.info())
 
 #selected features
 
@@ -139,7 +132,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.2,shuffl
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 
-rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42) #change
+rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42, max_depth=12) #change
 rf_classifier.fit(X_train, y_train)
 
 # Predictions
@@ -225,17 +218,29 @@ print(metrics.classification_report(y_test,y_pred_decisiontest ))
 print('\nConfusion Matrix of Decision Tree:')
 print(metrics.confusion_matrix(y_test, y_pred_decisiontest ))
 
-# import pickle
-# with open("classification.pkl", "wb") as f:
-#         pickle.dump(null_replacement, f)
-#         pickle.dump(amenities_columns, f)
-#         pickle.dump(pet_columns, f)
-#         pickle.dump(state_mode_price, f)
-#         pickle.dump(city_mode_price, f)
-#         pickle.dump(cats_mode_price, f)
-#         pickle.dump(dogs_mode_price, f)
-#         pickle.dump(label_encoders, f)
-#         pickle.dump(scaled_cols, f)
-#         pickle.dump(scaler, f)
-#         pickle.dump(top_feature, f)
-#         pickle.dump(gb_regressor, f)
+#handing unseen null values
+null_replacement['id']=-1
+null_replacement['time']=data_frame['time'].mean()
+null_replacement['square_feet']=data_frame['square_feet'].mean()
+null_replacement['title']=''
+null_replacement['body']=''
+null_replacement['price_type']=data_frame['price_type'].mode()
+null_replacement['source']=''
+
+
+
+
+import pickle
+with open("classification.pkl", "wb") as f:
+        pickle.dump(null_replacement, f)
+        pickle.dump(amenities_columns, f)
+        pickle.dump(pet_columns, f)
+        pickle.dump(state_mode_price, f)
+        pickle.dump(city_mode_price, f)
+        pickle.dump(cats_mode_price, f)
+        pickle.dump(dogs_mode_price, f)
+        pickle.dump(label_encoders, f)
+        pickle.dump(scaled_cols, f)
+        pickle.dump(scaler, f)
+        pickle.dump(selected_features, f)
+        pickle.dump(rf_classifier, f)
