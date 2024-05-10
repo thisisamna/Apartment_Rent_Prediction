@@ -78,21 +78,23 @@ data_frame[scaled_cols] = scaler.fit_transform(data_frame[scaled_cols])
 data_frame.head()
 
 
-plt.scatter(data_frame['city_mode_price'], data_frame['RentCategory'])
-plt.xlabel('city_mode_price')
-plt.ylabel('RentCategory')
-plt.title('Scatter plot of city_mode_price vs RentCategory')
-plt.show()
-plt.scatter(data_frame['square_feet'], data_frame['RentCategory'])
-plt.xlabel('square_feet')
-plt.ylabel('RentCategory')
-plt.title('Scatter plot of square_feet vs RentCategory')
-plt.show()
-plt.scatter(data_frame['bedrooms'], data_frame['RentCategory'])
-plt.xlabel('bedrooms')
-plt.ylabel('RentCategory')
-plt.title('Scatter plot of bedrooms vs RentCategory')
-plt.show()
+
+
+# plt.scatter(data_frame['city_mode_price'], data_frame['RentCategory'])
+# plt.xlabel('city_mode_price')
+# plt.ylabel('RentCategory')
+# plt.title('Scatter plot of city_mode_price vs RentCategory')
+# plt.show()
+# plt.scatter(data_frame['square_feet'], data_frame['RentCategory'])
+# plt.xlabel('square_feet')
+# plt.ylabel('RentCategory')
+# plt.title('Scatter plot of square_feet vs RentCategory')
+# plt.show()
+# plt.scatter(data_frame['bedrooms'], data_frame['RentCategory'])
+# plt.xlabel('bedrooms')
+# plt.ylabel('RentCategory')
+# plt.title('Scatter plot of bedrooms vs RentCategory')
+# plt.show()
 
 
 # plt.subplots(figsize=(12, 8))
@@ -107,14 +109,37 @@ plt.show()
 
 X = data_frame.drop('RentCategory', axis=1)
 Y = data_frame['RentCategory']
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.2,shuffle=True,random_state=10)
 print(X.info())
+
+#selected features
+
+
+from sklearn.feature_selection import mutual_info_classif
+
+# Calculate Information Gain for each feature
+info_gain = mutual_info_classif(X, Y)
+
+# Select the top features based on Information Gain
+num_features_to_select = 20  # Change this number as per your preference
+top_feature_indices = (-info_gain).argsort()[:num_features_to_select]
+selected_features = X.columns[top_feature_indices]
+
+print(selected_features)
+
+X = X[selected_features]
+
+
+
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size = 0.2,shuffle=True,random_state=10)
+# print(X_selected.info())
+
+
 
 #Random forest 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 
-rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42) #ttghiar
+rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42) #change
 rf_classifier.fit(X_train, y_train)
 
 # Predictions
@@ -136,7 +161,7 @@ print(metrics.confusion_matrix(y_test, y_pred_RFtest))
 from sklearn.svm import SVC
 from sklearn import metrics
 
-svm_classifier = SVC(kernel='rbf', random_state=42) #ttghiar
+svm_classifier = SVC(kernel='rbf', random_state=42, C=0.8) #change
 svm_classifier.fit(X_train, y_train)
 
 # Predictions
@@ -159,7 +184,7 @@ print(metrics.confusion_matrix(y_test, y_pred_svmtest))
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 
-logistic_classifier = LogisticRegression(random_state=42) #ttghiar
+logistic_classifier = LogisticRegression(random_state=42, tol=0.0001, C=0.1) #change
 logistic_classifier.fit(X_train, y_train)
 
 # Predictions
@@ -183,7 +208,7 @@ print(metrics.confusion_matrix(y_test, y_pred_logistictest))
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics
 
-tree_classifier = DecisionTreeClassifier(random_state=42)  #ttghiar
+tree_classifier = DecisionTreeClassifier(random_state=42, criterion='gini', max_depth=None)  #change
 tree_classifier.fit(X_train, y_train)
 
 # Predictions
