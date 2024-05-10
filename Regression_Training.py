@@ -7,6 +7,9 @@ from sklearn import linear_model
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
+import time
+# Record the start time
+start_time = time.time()
 
 data_frame = pd.read_csv('ApartmentRentPrediction.csv')
 
@@ -153,19 +156,10 @@ evaluate_model(poly_model,X_train,y_train,X_test,y_test)
 print("______________________")
 
 
-
-
-
 lr = linear_model.LinearRegression()
 print("Linear regression model")
 evaluate_model(lr,X_train,y_train,X_test,y_test)
 print("______________________")
-
-
-
-
-
-
 
 
 
@@ -218,6 +212,15 @@ print("Gradient boosting regressor model")
 evaluate_model(gb_regressor,X_train,y_train,X_test,y_test)
 print("______________________")
 
+
+# Record the end time
+end_time = time.time()
+
+# Calculate the difference
+time_difference = end_time - start_time
+
+print("Time taken:", time_difference, "seconds")
+
 import pickle
 with open("regression.pkl", "wb") as f:
         pickle.dump(null_replacement, f)
@@ -232,3 +235,4 @@ with open("regression.pkl", "wb") as f:
         pickle.dump(scaler, f)
         pickle.dump(top_feature, f)
         pickle.dump(gb_regressor, f)
+

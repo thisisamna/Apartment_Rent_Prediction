@@ -8,6 +8,10 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
 
+import time
+# Record the start time
+start_time = time.time()
+
 data_frame = pd.read_csv('ApartmentRentPrediction_Milestone2.csv')
 y=data_frame['RentCategory']
 X=data_frame.drop(columns=['RentCategory'])
@@ -20,7 +24,6 @@ train_data_frame['RentCategory']=y_train
 train_data_frame['currency'] = 0
 train_data_frame['fee'] = 0
 columns_for_encoding = ('category', 'title', 'body', 'has_photo', 'price_type', 'address', 'source', 'state_mode_price','city_mode_price', 'cats_mode_price','dogs_mode_price')
-print(train_data_frame.columns)
 train_data_frame['amenities'] = train_data_frame['amenities'].str.replace(r'[/\s]', ',')
 df_encoded_amenities = train_data_frame['amenities'].str.get_dummies(sep=',')
 amenities_columns=df_encoded_amenities.columns.values
@@ -200,73 +203,82 @@ print('\nConfusion Matrix of Random Forest:')
 print(metrics.confusion_matrix(y_test, y_pred_RFtest))
 
 #------------------------------------------------------------------
-#SVM
-from sklearn.svm import SVC
-from sklearn import metrics
+# #SVM
+# from sklearn.svm import SVC
+# from sklearn import metrics
 
-svm_classifier = SVC(kernel='rbf', random_state=42, C=0.8) #change
-svm_classifier.fit(X_train, y_train)
+# svm_classifier = SVC(kernel='rbf', random_state=42, C=0.8) #change
+# svm_classifier.fit(X_train, y_train)
 
-# Predictions
-y_pred_svmtrain = svm_classifier.predict(X_train)
-y_pred_svmtest = svm_classifier.predict(X_test)
+# # Predictions
+# y_pred_svmtrain = svm_classifier.predict(X_train)
+# y_pred_svmtest = svm_classifier.predict(X_test)
 
-# Evaluation
-accuracy_train = svm_classifier.score(X_train, y_train)
-accuracy_test = svm_classifier.score(X_test, y_test)
-print('\n SVM train accuracy:', accuracy_train)
-print('SVM  test accuracy:', accuracy_test)
-print('\nClassification Report of SVM:')
-print(metrics.classification_report(y_test, y_pred_svmtest))
-print('\nConfusion Matrix of SVM:')
-print(metrics.confusion_matrix(y_test, y_pred_svmtest))
+# # Evaluation
+# accuracy_train = svm_classifier.score(X_train, y_train)
+# accuracy_test = svm_classifier.score(X_test, y_test)
+# print('\n SVM train accuracy:', accuracy_train)
+# print('SVM  test accuracy:', accuracy_test)
+# print('\nClassification Report of SVM:')
+# print(metrics.classification_report(y_test, y_pred_svmtest))
+# print('\nConfusion Matrix of SVM:')
+# print(metrics.confusion_matrix(y_test, y_pred_svmtest))
 
 
 #------------------------------------------------------------------
-#LOGISTIC
-from sklearn.linear_model import LogisticRegression
-from sklearn import metrics
+# #LOGISTIC
+# from sklearn.linear_model import LogisticRegression
+# from sklearn import metrics
 
-logistic_classifier = LogisticRegression(random_state=42, tol=0.0001, C=0.1) #change
-logistic_classifier.fit(X_train, y_train)
+# logistic_classifier = LogisticRegression(random_state=42, tol=0.0001, C=0.1) #change
+# logistic_classifier.fit(X_train, y_train)
 
-# Predictions
-y_pred_logistictrain = logistic_classifier.predict(X_train)
-y_pred_logistictest = logistic_classifier.predict(X_test)
+# # Predictions
+# y_pred_logistictrain = logistic_classifier.predict(X_train)
+# y_pred_logistictest = logistic_classifier.predict(X_test)
 
-# Evaluation
-accuracy_train = logistic_classifier.score(X_train, y_train)
-accuracy_test = logistic_classifier.score(X_test, y_test)
-print('\nLogistic Regression train accuarcy:', accuracy_train)
-print('Logistic Regression test accuracy:', accuracy_test)
-print('\nClassification Report of Logistic Regression:')
-print(metrics.classification_report(y_test, y_pred_logistictest))
-print('\nConfusion Matrix of Logistic Regression:')
-print(metrics.confusion_matrix(y_test, y_pred_logistictest))
+# # Evaluation
+# accuracy_train = logistic_classifier.score(X_train, y_train)
+# accuracy_test = logistic_classifier.score(X_test, y_test)
+# print('\nLogistic Regression train accuarcy:', accuracy_train)
+# print('Logistic Regression test accuracy:', accuracy_test)
+# print('\nClassification Report of Logistic Regression:')
+# print(metrics.classification_report(y_test, y_pred_logistictest))
+# print('\nConfusion Matrix of Logistic Regression:')
+# print(metrics.confusion_matrix(y_test, y_pred_logistictest))
 
 
 
 #------------------------------------------------------------------
 #DecisionTree
-from sklearn.tree import DecisionTreeClassifier
-from sklearn import metrics
+# from sklearn.tree import DecisionTreeClassifier
+# from sklearn import metrics
 
-tree_classifier = DecisionTreeClassifier(random_state=42, criterion='gini', max_depth=None)  #change
-tree_classifier.fit(X_train, y_train)
+# tree_classifier = DecisionTreeClassifier(random_state=42, criterion='gini', max_depth=None)  #change
+# tree_classifier.fit(X_train, y_train)
 
-# Predictions
-y_pred_decisiontrain = tree_classifier.predict(X_train)
-y_pred_decisiontest = tree_classifier.predict(X_test)
+# # Predictions
+# y_pred_decisiontrain = tree_classifier.predict(X_train)
+# y_pred_decisiontest = tree_classifier.predict(X_test)
 
 # Evaluation
-accuracy_train = tree_classifier.score(X_train, y_train)
-accuracy_test = tree_classifier.score(X_test, y_test)
-print('\nDecision Tree train accuracy:', accuracy_train)
-print('Decision Tree test accuracy:', accuracy_test)
-print('\nClassification Report of Decision Tree :')
-print(metrics.classification_report(y_test,y_pred_decisiontest ))
-print('\nConfusion Matrix of Decision Tree:')
-print(metrics.confusion_matrix(y_test, y_pred_decisiontest ))
+# accuracy_train = tree_classifier.score(X_train, y_train)
+# accuracy_test = tree_classifier.score(X_test, y_test)
+# print('\nDecision Tree train accuracy:', accuracy_train)
+# print('Decision Tree test accuracy:', accuracy_test)
+# print('\nClassification Report of Decision Tree :')
+# print(metrics.classification_report(y_test,y_pred_decisiontest ))
+# print('\nConfusion Matrix of Decision Tree:')
+# print(metrics.confusion_matrix(y_test, y_pred_decisiontest ))
+
+
+# Record the end time
+end_time = time.time()
+
+# Calculate the difference
+time_difference = end_time - start_time
+
+print("Time taken:", time_difference, "seconds")
 
 #handing unseen null values
 null_replacement['id']=-1
@@ -290,7 +302,7 @@ with open("classification.pkl", "wb") as f:
         pickle.dump(cats_mode_price, f)
         pickle.dump(dogs_mode_price, f)
         pickle.dump(label_encoders, f)
-        pickle.dump(scaled_cols, f)
+        pickle.dump(scaled_cols, f) 
         pickle.dump(scaler, f)
         pickle.dump(selected_features, f)
         pickle.dump(rf_classifier, f)
