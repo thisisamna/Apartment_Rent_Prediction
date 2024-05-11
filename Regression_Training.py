@@ -7,9 +7,9 @@ from sklearn import linear_model
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
 
-import time
-# Record the start time
-start_time = time.time()
+
+
+
 
 data_frame = pd.read_csv('ApartmentRentPrediction.csv')
 y=data_frame['price_display']
@@ -18,8 +18,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2,shuffl
 train_data_frame=pd.DataFrame(X_train)
 train_data_frame['price_display']=y_train
 
-# data_frame['time'] = pd.to_datetime(data_frame['time'], unit='s')
-# data_frame['time'] = pd.to_datetime(data_frame['time'], unit='s')
+
+
 train_data_frame.drop('price',axis=1, inplace=True)
 train_data_frame['currency'] = 0
 train_data_frame['fee'] = 0
@@ -271,13 +271,9 @@ evaluate_model(gb_regressor,X_train,y_train,X_test,y_test)
 print("______________________")
 
 
-# Record the end time
-end_time = time.time()
 
-# Calculate the difference
-time_difference = end_time - start_time
 
-print("Time taken:", time_difference, "seconds")
+
 
 import pickle
 with open("regression.pkl", "wb") as f:
@@ -292,5 +288,11 @@ with open("regression.pkl", "wb") as f:
         pickle.dump(scaled_cols, f)
         pickle.dump(scaler, f)
         pickle.dump(top_feature, f)
+        pickle.dump(poly_model, f)
+        pickle.dump(lr, f)
+        pickle.dump(rf_regressor, f)
+        pickle.dump(lasso_cv, f)
+        pickle.dump(ridge_cv, f)
+        pickle.dump(model, f)
         pickle.dump(gb_regressor, f)
 

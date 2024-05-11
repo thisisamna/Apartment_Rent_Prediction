@@ -20,6 +20,12 @@ with open("regression.pkl", "rb") as f:
         scaled_cols=pickle.load(f)
         scaler=pickle.load(f)
         top_feature=pickle.load(f)
+        poly_model=pickle.load(f)
+        lr=pickle.load(f)
+        rf_regressor=pickle.load(f)
+        lasso_cv=pickle.load(f)
+        ridge_cv=pickle.load(f)
+        model=pickle.load(f)
         gb_regressor=pickle.load(f)
 
 
@@ -80,9 +86,7 @@ y = data_frame['price_display']
 
 
 def evaluate_model(model, X, y):
-  # Fit the model to the training data
-  model.fit(X, y)
-  # Make predictions on both training and testing sets
+  # Fit the model to the training data  # Make predictions on both training and testing sets
   predictions = model.predict(X)
   # Calculate Mean Squared Error for both training and testing sets
   from sklearn.metrics import mean_squared_error
@@ -95,4 +99,38 @@ def evaluate_model(model, X, y):
   print('Model R-squared score:', r2)
 
 
+print("Polynomial model")
+evaluate_model(poly_model,X,y)
+print("______________________")
+
+
+print("Linear regression model")
+evaluate_model(lr,X,y)
+print("______________________")
+
+
+print("Random Forest model")
+evaluate_model(rf_regressor,X,y)
+print("______________________")
+
+
+print("Lasso CV model")
+evaluate_model(lasso_cv,X,y)
+print("______________________")
+
+
+
+print("Ridge CV model")
+evaluate_model(ridge_cv,X,y)
+print("______________________")
+
+
+print("Decision tree model")
+evaluate_model(model,X,y)
+print("______________________")
+
+
+print("Gradient boosting regressor model")
 evaluate_model(gb_regressor,X,y)
+print("______________________")
+
