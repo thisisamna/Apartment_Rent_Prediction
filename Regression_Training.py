@@ -1,4 +1,4 @@
-from sklearn.preprocessing import OrdinalEncoder, PolynomialFeatures, StandardScaler
+from sklearn.preprocessing import OrdinalEncoder, PolynomialFeatures, MinMaxScaler
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -70,6 +70,7 @@ train_data_frame.drop(['Cats', 'Dogs'], axis=1, inplace=True)
 
 train_data_frame['sum4'] = train_data_frame['state_mean_price']  + train_data_frame['city_mean_price']  + (train_data_frame['cats_mean_price']  + train_data_frame['dogs_mean_price'] )
 train_data_frame['sum5'] = train_data_frame['state_mean_price']  * train_data_frame['city_mean_price'] + (train_data_frame['cats_mean_price']  * train_data_frame['dogs_mean_price'] )
+train_data_frame['ratio_bedrooms_bathrooms'] = train_data_frame['bedrooms'] / train_data_frame['bathrooms']
 
 label_encoders = {} #Dictionary to store label encoders
 for c in columns_for_encoding:
@@ -79,14 +80,14 @@ for c in columns_for_encoding:
     label_encoders[c] = lbl
 
 
-from scipy import stats
-z_threshold = 3
-with np.errstate(divide='ignore', invalid='ignore'):
-    z_scores = stats.zscore(train_data_frame)
-z_scores = np.nan_to_num(z_scores)
-outliers_mask = (z_scores < -z_threshold) | (z_scores > z_threshold)
-train_data_frame_no_outliers = train_data_frame[~outliers_mask.any(axis=1)]
-train_data_frame = train_data_frame_no_outliers
+# from scipy import stats
+# z_threshold = 3
+# with np.errstate(divide='ignore', invalid='ignore'):
+#     z_scores = stats.zscore(train_data_frame)
+# z_scores = np.nan_to_num(z_scores)
+# outliers_mask = (z_scores < -z_threshold) | (z_scores > z_threshold)
+# train_data_frame_no_outliers = train_data_frame[~outliers_mask.any(axis=1)]
+# train_data_frame = train_data_frame_no_outliers
 
 
 
@@ -94,7 +95,7 @@ train_data_frame = train_data_frame_no_outliers
 
 scaled_cols = list(train_data_frame.columns)
 scaled_cols.remove("price_display")
-scaler = StandardScaler()
+scaler = MinMaxScaler()
 train_data_frame[scaled_cols] = scaler.fit_transform(train_data_frame[scaled_cols])
 train_data_frame.head()
 
@@ -116,16 +117,23 @@ plt.title('Scatter plot of bedrooms vs price_display')
 plt.show()
 
 
-plt.subplots(figsize=(12, 8))
-corr = train_data_frame.corr()
-top_feature = list(corr.index[abs(corr['price_display'])>0.2])
-top_corr = train_data_frame[top_feature].corr()
-sns.heatmap(top_corr, annot=True)
-plt.show()
-top_feature.remove('price_display')
+
 X_train = train_data_frame.drop('price_display', axis=1)
-X_train=train_data_frame[top_feature]
 y_train = train_data_frame['price_display']
+
+from sklearn.feature_selection import mutual_info_regression
+
+# Calculate Information Gain for each feature
+info_gain = mutual_info_regression(X_train, y_train)
+
+# Select the top features based on Information Gain
+num_features_to_select = 30  # Change this number as per your preference
+selected_features_indices = (-info_gain).argsort()[:num_features_to_select]
+selected_features = X_train.columns[selected_features_indices]
+
+print(selected_features)
+
+X_train = X_train[selected_features]
 
 #-------------------------------------------------------
 #Preprocessing test data
@@ -175,11 +183,11 @@ for c in columns_for_encoding:
 
 X_test['sum4'] = X_test['state_mean_price']  + X_test['city_mean_price']  + (X_test['cats_mean_price']  + X_test['dogs_mean_price'] )
 X_test['sum5'] = X_test['state_mean_price']  * X_test['city_mean_price'] + (X_test['cats_mean_price']  * X_test['dogs_mean_price'] )
-
+X_test['ratio_bedrooms_bathrooms'] = X_test['bedrooms'] / X_test['bathrooms']
 
 X_test[scaled_cols] = scaler.transform(X_test[scaled_cols])
 
-X_test = X_test[top_feature]
+X_test = X_test[selected_features]
 
 
 #-----------------------------------------------------
@@ -265,7 +273,7 @@ print("______________________")
 
 from sklearn.ensemble import GradientBoostingRegressor
 
-gb_regressor = GradientBoostingRegressor()
+gb_regressor = GradientBoostingRegressor(learning_rate=0.2,max_depth=3)
 print("Gradient boosting regressor model")
 evaluate_model(gb_regressor,X_train,y_train,X_test,y_test)
 print("______________________")
@@ -287,7 +295,7 @@ with open("regression.pkl", "wb") as f:
         pickle.dump(label_encoders, f)
         pickle.dump(scaled_cols, f)
         pickle.dump(scaler, f)
-        pickle.dump(top_feature, f)
+        pickle.dump(selected_features, f)
         pickle.dump(poly_model, f)
         pickle.dump(lr, f)
         pickle.dump(rf_regressor, f)

@@ -77,6 +77,7 @@ for c in columns_for_encoding:
 
 data_frame['sum4'] = data_frame['state_mean_price']  + data_frame['city_mean_price']  + (data_frame['cats_mean_price']  + data_frame['dogs_mean_price'] )
 data_frame['sum5'] = data_frame['state_mean_price']  * data_frame['city_mean_price'] + (data_frame['cats_mean_price']  * data_frame['dogs_mean_price'] )
+data_frame['ratio_bedrooms_bathrooms'] = data_frame['bedrooms'] / data_frame['bathrooms']
 
 
 data_frame[scaled_cols] = scaler.transform(data_frame[scaled_cols])
