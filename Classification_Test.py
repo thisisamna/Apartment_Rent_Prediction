@@ -5,7 +5,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn import linear_model
 from sklearn import metrics
-from sklearn.model_selection import train_test_split
 import pickle
 
 with open("classification.pkl", "rb") as f:
@@ -21,6 +20,9 @@ with open("classification.pkl", "rb") as f:
         scaler=pickle.load(f)
         selected_features=pickle.load(f)
         rf_classifier=pickle.load(f)
+        svm_classifier=pickle.load(f)
+        logistic_classifier=pickle.load(f)
+        tree_classifier=pickle.load(f)
 
 data_frame = pd.read_csv('ApartmentRentPrediction_Milestone2.csv')
 
@@ -71,17 +73,91 @@ y = data_frame['RentCategory']
 
 #Random forest 
 from sklearn.ensemble import RandomForestClassifier
-from sklearn import metrics
-
-rf_classifier.fit(X, y)
 
 # Predictions
-y_pred_RF= rf_classifier.predict(X)
+ypred_RF= rf_classifier.predict(X)
 
 # Evaluation
 accuracy = rf_classifier.score(X, y)
 print('\nRandom Forest accuracy:', accuracy)
 print('\nClassification Report of Random Forest:')
-print(metrics.classification_report(y, y_pred_RF))
+print(metrics.classification_report(y, ypred_RF))
 print('\nConfusion Matrix of Random Forest:')
-print(metrics.confusion_matrix(y, y_pred_RF))
+print(metrics.confusion_matrix(y, ypred_RF))
+
+
+#------------------------------------------------------------------
+#SVM
+
+
+from sklearn.svm import SVC
+
+
+
+# Predictions
+ypred_svm = svm_classifier.predict(X)
+
+# Evaluation
+accuracy = svm_classifier.score(X, y)
+print('\n SVM  accuracy:', accuracy)
+print('\nClassification Report of SVM:')
+print(metrics.classification_report(y, ypred_svm))
+print('\nConfusion Matrix of SVM:')
+print(metrics.confusion_matrix(y, ypred_svm))
+
+
+#------------------------------------------------------------------
+
+#LOGISTIC
+
+
+from sklearn.linear_model import LogisticRegression
+
+# Predictions
+
+
+ypred_logistic = logistic_classifier.predict(X)
+
+# Evaluation
+accuracy = logistic_classifier.score(X, y)
+print('\nLogistic Regression  accuarcy:', accuracy)
+print('\nClassification Report of Logistic Regression:')
+print(metrics.classification_report(y, ypred_logistic))
+print('\nConfusion Matrix of Logistic Regression:')
+print(metrics.confusion_matrix(y, ypred_logistic))
+
+
+
+
+
+
+
+
+
+
+#------------------------------------------------------------------
+#DecisionTree
+
+
+from sklearn.tree import DecisionTreeClassifier
+
+# Predictions
+
+
+ypred_decision = tree_classifier.predict(X)
+ypred_decision = tree_classifier.predict(X)
+
+#Evaluation
+accuracy = tree_classifier.score(X, y)
+print('\nDecision Tree  accuracy:', accuracy)
+print('\nClassification Report of Decision Tree :')
+print(metrics.classification_report(y,ypred_decision ))
+print('\nConfusion Matrix of Decision Tree:')
+print(metrics.confusion_matrix(y, ypred_decision ))
+
+
+
+
+
+
+
