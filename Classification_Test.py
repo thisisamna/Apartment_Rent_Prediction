@@ -23,6 +23,11 @@ with open("classification.pkl", "rb") as f:
         svm_classifier=pickle.load(f)
         logistic_classifier=pickle.load(f)
         tree_classifier=pickle.load(f)
+        voting_classifier=pickle.load(f)
+        knn_classifier=pickle.load(f)
+        xgb_label_encoder=pickle.load(f)
+        xgb_classifier=pickle.load(f)
+        stacking_classifier=pickle.load(f)
 
 data_frame = pd.read_csv('ApartmentRentPrediction_Milestone2.csv')
 
@@ -72,8 +77,6 @@ X = data_frame[selected_features]
 y = data_frame['RentCategory']
 
 #Random forest 
-from sklearn.ensemble import RandomForestClassifier
-
 # Predictions
 ypred_RF= rf_classifier.predict(X)
 
@@ -87,12 +90,6 @@ print(metrics.confusion_matrix(y, ypred_RF))
 
 
 #------------------------------------------------------------------
-#SVM
-
-
-from sklearn.svm import SVC
-
-
 
 # Predictions
 ypred_svm = svm_classifier.predict(X)
@@ -110,11 +107,7 @@ print(metrics.confusion_matrix(y, ypred_svm))
 
 #LOGISTIC
 
-
-from sklearn.linear_model import LogisticRegression
-
 # Predictions
-
 
 ypred_logistic = logistic_classifier.predict(X)
 
@@ -127,23 +120,10 @@ print('\nConfusion Matrix of Logistic Regression:')
 print(metrics.confusion_matrix(y, ypred_logistic))
 
 
-
-
-
-
-
-
-
-
 #------------------------------------------------------------------
 #DecisionTree
 
-
-from sklearn.tree import DecisionTreeClassifier
-
 # Predictions
-
-
 ypred_decision = tree_classifier.predict(X)
 ypred_decision = tree_classifier.predict(X)
 
@@ -157,7 +137,67 @@ print(metrics.confusion_matrix(y, ypred_decision ))
 
 
 
+#------------------------------------
+# Voting classifier
+from sklearn.metrics import accuracy_score
+
+# Predictions
 
 
+y_pred_voting = voting_classifier.predict(X)
+
+# Evaluation
+accuracy = accuracy_score(y, y_pred_voting)
+
+print('Voting Ensemble accuracy:', accuracy)
+
+
+
+#--------------------------------------------------
+#KNN Classifier
+
+y_pred_knn = knn_classifier.predict(X)
+accuracy = knn_classifier.score(X, y)
+
+print('\n KNN accuracy:', accuracy)
+print('\nClassification Report of KNN:')
+print(metrics.classification_report(y, y_pred_knn))
+print('\nConfusion Matrix of KNN:')
+print(metrics.confusion_matrix(y, y_pred_knn))
+
+
+
+#------------------------------------------
+#XGBOOST
+
+
+y_encoded = xgb_label_encoder.transform(y)
+y_pred_xgb = xgb_classifier.predict(X)
+accuracy = metrics.accuracy_score(y_encoded, y_pred_xgb)
+accuracy = metrics.accuracy_score(y_encoded, y_pred_xgb)
+
+print('\n XGBoost accuracy:', accuracy)
+print('\nClassification Report of XGBoost:')
+print(metrics.classification_report(y_encoded, y_pred_xgb))
+print('\nConfusion Matrix of XGBoost:')
+print(metrics.confusion_matrix(y_encoded, y_pred_xgb))
+
+
+
+#----------------------------------------------
+#STACKING CLASSIFIER
+
+
+# Predictions
+y_pred_stacking = stacking_classifier.predict(X)
+
+# Evaluation
+accuracy = metrics.accuracy_score(y, y_pred_stacking)
+
+print('\n Stacking Classifier accuracy:', accuracy)
+print('\nClassification Report of Stacking Classifier:')
+print(metrics.classification_report(y, y_pred_stacking))
+print('\nConfusion Matrix of Stacking Classifier:')
+print(metrics.confusion_matrix(y, y_pred_stacking))
 
 

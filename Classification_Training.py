@@ -345,6 +345,189 @@ print("Total test time ",test_time," s")
 #reset time
 train_time=train_preprocessing_time
 test_time=test_preprocessing_time
+
+#------------------------------------
+# Voting classifier
+start_time = time.time()
+
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+# Create a voting ensemble classifier
+voting_classifier = VotingClassifier(
+    estimators=[('rf', rf_classifier), ('tree', tree_classifier), ('svm', svm_classifier)],
+    voting='hard'
+)
+
+# Train the voting classifier
+voting_classifier.fit(X_train, y_train)
+end_time = time.time()
+train_time+= end_time - start_time
+
+# Predictions
+start_time = time.time()
+
+y_pred_voting_train = voting_classifier.predict(X_train)
+y_pred_voting_test = voting_classifier.predict(X_test)
+
+# Evaluation
+accuracy_train = accuracy_score(y_train, y_pred_voting_train)
+accuracy_test = accuracy_score(y_test, y_pred_voting_test)
+
+print('Voting Ensemble train accuracy:', accuracy_train)
+print('Voting Ensemble test accuracy:', accuracy_test)
+end_time = time.time()
+test_time+= end_time - start_time
+
+print("Total train time ",train_time," s")
+print("Total test time ",test_time," s")
+
+#reset time
+train_time=train_preprocessing_time
+test_time=test_preprocessing_time
+
+#--------------------------------------------------
+#KNN Classifier
+start_time = time.time()
+
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import metrics
+
+knn_classifier = KNeighborsClassifier(n_neighbors=5)  # ttghiar
+
+knn_classifier.fit(X_train, y_train)
+end_time = time.time()
+train_time+= end_time - start_time
+
+start_time = time.time()
+
+y_pred_knn_train = knn_classifier.predict(X_train)
+y_pred_knn_test = knn_classifier.predict(X_test)
+
+accuracy_train = knn_classifier.score(X_train, y_train)
+accuracy_test = knn_classifier.score(X_test, y_test)
+
+print('\n KNN train accuracy:', accuracy_train)
+print('KNN test accuracy:', accuracy_test)
+print('\nClassification Report of KNN:')
+print(metrics.classification_report(y_test, y_pred_knn_test))
+print('\nConfusion Matrix of KNN:')
+print(metrics.confusion_matrix(y_test, y_pred_knn_test))
+end_time = time.time()
+test_time+= end_time - start_time
+
+print("Total train time ",train_time," s")
+print("Total test time ",test_time," s")
+
+#reset time
+train_time=train_preprocessing_time
+test_time=test_preprocessing_time
+
+#------------------------------------------
+#XGBOOST
+start_time = time.time()
+
+import xgboost as xgb
+from sklearn import metrics
+
+from sklearn.preprocessing import LabelEncoder
+
+# Initialize LabelEncoder
+xgb_label_encoder = LabelEncoder()
+
+# Fit label encoder and transform target labels
+y_train_encoded = xgb_label_encoder.fit_transform(y_train)
+
+
+xgb_classifier = xgb.XGBClassifier()
+xgb_classifier.fit(X_train, y_train_encoded)
+end_time = time.time()
+train_time+= end_time - start_time
+
+start_time = time.time()
+
+y_test_encoded = xgb_label_encoder.transform(y_test)
+y_pred_xgb_train = xgb_classifier.predict(X_train)
+y_pred_xgb_test = xgb_classifier.predict(X_test)
+accuracy_train = metrics.accuracy_score(y_train_encoded, y_pred_xgb_train)
+accuracy_test = metrics.accuracy_score(y_test_encoded, y_pred_xgb_test)
+
+print('\n XGBoost train accuracy:', accuracy_train)
+print('XGBoost test accuracy:', accuracy_test)
+print('\nClassification Report of XGBoost:')
+print(metrics.classification_report(y_test_encoded, y_pred_xgb_test))
+print('\nConfusion Matrix of XGBoost:')
+print(metrics.confusion_matrix(y_test_encoded, y_pred_xgb_test))
+end_time = time.time()
+test_time+= end_time - start_time
+
+print("Total train time ",train_time," s")
+print("Total test time ",test_time," s")
+
+#reset time
+train_time=train_preprocessing_time
+test_time=test_preprocessing_time
+
+#----------------------------------------------
+#STACKING CLASSIFIER
+start_time = time.time()
+
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import StackingClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+import xgboost as xgb
+from sklearn import metrics
+
+# Initialize base models
+base_models = [
+    ('decision_tree', DecisionTreeClassifier()),
+   # ('random_forest', RandomForestClassifier()),
+    ('svm', SVC(kernel='rbf', random_state=42)),
+   # ('logistic', LogisticRegression()),
+    ('knn', KNeighborsClassifier()),
+    ('xgboost', xgb.XGBClassifier())
+]
+
+# Initialize stacking classifier with meta-model (e.g., Logistic Regression)
+stacking_classifier = StackingClassifier(estimators=base_models, final_estimator=   xgb.XGBClassifier())
+
+# Train the stacking classifier on the training data
+stacking_classifier.fit(X_train, y_train)
+end_time = time.time()
+train_time+= end_time - start_time
+
+start_time = time.time()
+
+# Predictions
+y_pred_stacking_train = stacking_classifier.predict(X_train)
+y_pred_stacking_test = stacking_classifier.predict(X_test)
+
+# Evaluation
+accuracy_train = metrics.accuracy_score(y_train, y_pred_stacking_train)
+accuracy_test = metrics.accuracy_score(y_test, y_pred_stacking_test)
+
+print('\n Stacking Classifier train accuracy:', accuracy_train)
+print('Stacking Classifier test accuracy:', accuracy_test)
+print('\nClassification Report of Stacking Classifier:')
+print(metrics.classification_report(y_test, y_pred_stacking_test))
+print('\nConfusion Matrix of Stacking Classifier:')
+print(metrics.confusion_matrix(y_test, y_pred_stacking_test))
+end_time = time.time()
+test_time+= end_time - start_time
+
+print("Total train time ",train_time," s")
+print("Total test time ",test_time," s")
+
+#reset time
+train_time=train_preprocessing_time
+test_time=test_preprocessing_time
+
+#----------------------------------------------
 #handing unseen null values
 null_replacement['id']=-1
 null_replacement['time']=train_data_frame['time'].mean()
@@ -374,3 +557,9 @@ with open("classification.pkl", "wb") as f:
         pickle.dump(svm_classifier, f)
         pickle.dump(logistic_classifier, f)
         pickle.dump(tree_classifier, f)
+        pickle.dump(voting_classifier, f)
+        pickle.dump(knn_classifier, f)
+        pickle.dump(xgb_label_encoder,f)
+        pickle.dump(xgb_classifier, f)
+        pickle.dump(stacking_classifier, f)
+
